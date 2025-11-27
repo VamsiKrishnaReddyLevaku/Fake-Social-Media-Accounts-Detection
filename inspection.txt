@@ -1,0 +1,27 @@
+Shape: (3000, 24)
+
+Missing %:
+generic_comment_rate        12.233333
+suspicious_links_in_bio     12.000000
+follower_following_ratio    11.866667
+has_profile_pic             11.500000
+account_age_days            11.433333
+spam_comments_rate          11.266667
+followers                   11.266667
+username_randomness         11.233333
+verified                    11.233333
+platform                    11.100000
+following                   11.100000
+caption_similarity_score    11.000000
+bio_length                  10.966667
+content_similarity_score    10.933333
+posts                       10.566667
+posts_per_day               10.366667
+follow_unfollow_rate        10.266667
+is_fake                      0.000000
+username                     0.000000
+username_length              0.000000
+digits_count                 0.000000
+digit_ratio                  0.000000
+special_char_count           0.000000
+repeat_char_count            0.000000
