@@ -1,17 +1,3 @@
-"""
-Fake Social Media Account Detection — Full pipeline script
-Updated: Loads dataset named fake_dataset.xlsx by default.
-Place fake_dataset.xlsx in the same folder as this script.
-
-Run:
-    python fake_account_pipeline.py
-or:
-    python fake_account_pipeline.py --input fake_dataset.xlsx
-
-Requirements:
-    pip install pandas numpy scikit-learn matplotlib openpyxl joblib xgboost
-"""
-
 import os
 import argparse
 import warnings
@@ -140,9 +126,7 @@ def plot_roc(results, y_test, outdir):
 def main(args):
     ensure_dir(args.outdir)
 
-    # =========================
-    # AUTO-LOAD fake_dataset.xlsx
-    # =========================
+    
     dataset_path = args.input
     if not dataset_path or not os.path.exists(dataset_path):
         dataset_path = os.path.join(os.getcwd(), "fake_dataset.xlsx")
@@ -159,21 +143,19 @@ def main(args):
 
     print("Data loaded:", df.shape)
 
-    # Step 2: Inspection
+    
     basic_inspection(df, args.outdir)
 
-    # Step 3: Processing
     df = create_basic_features(df)
 
-    # Drop IDs
     id_cols = [c for c in df.columns if any(x in c.lower() for x in ("id", "uuid", "handle"))]
     df.drop(columns=id_cols, inplace=True, errors="ignore")
 
-    # Drop >70% missing
+    
     high_missing = df.columns[(df.isnull().mean() > 0.7)]
     df.drop(columns=high_missing, inplace=True)
 
-    # Detect target
+    
     target = args.target or detect_target(df)
     if not target:
         raise ValueError("Could not detect target variable. Provide --target manually.")
@@ -182,28 +164,27 @@ def main(args):
     y = df[target]
     X = df.drop(columns=[target])
 
-    # Encode target
+    
     y = y.replace({"fake": 1, "real": 0, "bot": 1, "yes": 1, "no": 0})
     if y.dtype == object:
         y = LabelEncoder().fit_transform(y.fillna("missing"))
 
-    # Split numeric/categorical
+    
     numeric = X.select_dtypes(include=np.number).columns.tolist()
     categorical = X.select_dtypes(include=["object", "bool"]).columns.tolist()
 
-    # Cap outliers
+    
     X[numeric] = cap_outliers(X[numeric], numeric)
 
-    # Step 4: EDA
+    
     plot_class_balance(y, args.outdir)
     plot_distributions(X, numeric, args.outdir)
 
-    # Step 6: Train-test split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=args.test_size, random_state=args.seed, stratify=y
     )
 
-    # Pipelines
+    
     numeric_transform = Pipeline([
         ("imputer", SimpleImputer(strategy="median")),
         ("scaler", StandardScaler())
@@ -256,14 +237,14 @@ def main(args):
 
         print(f"{name} → Train: {results[name]['train_acc']:.4f}, Test: {results[name]['test_acc']:.4f}")
 
-    # Save ROC
+    
     plot_roc(results, y_test, args.outdir)
 
-    # Save best model
+    
     best = max(results, key=lambda m: results[m]["test_acc"])
     joblib.dump(models[best], os.path.join(args.outdir, "best_model.joblib"))
     print("Saved best model:", best)
-
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -274,3 +255,4 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
     main(args)
+
