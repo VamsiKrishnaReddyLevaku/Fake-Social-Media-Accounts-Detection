@@ -472,16 +472,8 @@ joblib.dump(best_model_pipeline, save_path)
 print(f"Our DOPE model saved successfully at:\n   {save_path}")
 
 
-# %% [markdown]
-# 
-#  Models Trained: LogisticRegression, RandomForest, GradientBoosting.
-#  Best model --> `outputs/best_model.joblib`.
-#  Key metrics --> `outputs/metrics_summary.txt`.
-#  Plots --> `outputs/plots/`.
-# 
-# 
 
-# %%
+
 
 
 
